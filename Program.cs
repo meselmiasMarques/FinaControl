@@ -1,4 +1,5 @@
 using FinaControl.Data;
+using FinaControl.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,10 @@ builder.Services.AddDbContext<FinaControlDbContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
-var app = builder.Build();
 
+builder.Services.AddTransient<UserRepository>();
+
+var app = builder.Build();
+app.MapControllers();
 
 app.Run();
