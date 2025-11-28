@@ -1,6 +1,4 @@
-using System.Runtime.InteropServices.JavaScript;
-
-namespace FinaControl.ViewModels.ResponseViewModel;
+namespace FinaControl.ViewModels.Response;
 
 public class Response<T>
 {

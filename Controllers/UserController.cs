@@ -1,7 +1,7 @@
 using FinaControl.Extensions;
 using FinaControl.Models;
 using FinaControl.Repositories;
-using FinaControl.ViewModels.ResponseViewModel;
+using FinaControl.ViewModels.Response;
 using FinaControl.ViewModels.User;
 using Microsoft.AspNetCore.Mvc;
 
