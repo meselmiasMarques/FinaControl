@@ -26,6 +26,10 @@ public class TransactionMap :  IEntityTypeConfiguration<Transaction>
             .IsRequired()
             .HasColumnType("INT");
         
+        builder.Property(c => c.CreatedAt)
+            .IsRequired()
+            .HasDefaultValueSql("GETDATE()");
+        
         //Relacionamentos
         
         builder.HasOne(c => c.Category)

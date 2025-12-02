@@ -10,17 +10,17 @@ namespace FinaControl.Controllers;
 [ApiController]
 public class UserController(UserRepository repository) : ControllerBase
 {
-    private readonly IRepository<User> _repository = repository;
+    private readonly UserRepository _repository = repository;
     
     [HttpGet("v1/users")]
-    public async Task<IActionResult> Get(
+    public async Task<IActionResult> GetAsync(
         [FromRoute] int skip = 0, 
         [FromRoute] int take = 25
         )
     {
         try
         {
-            var users = await _repository.Get(skip, take);
+            var users = await _repository.GetUsersWithRolesEndTransactions(skip, take);
             if (users == null)
                 return NotFound(new Response<string>("Não foi encontrado os usuários"));
             
@@ -33,13 +33,13 @@ public class UserController(UserRepository repository) : ControllerBase
     }
     
     [HttpGet("v1/users/{id:long}")]
-    public async Task<IActionResult> Get(
+    public async Task<IActionResult> GetAsync(
         [FromRoute] long id
     )
     {
         try
         {
-            var user = await _repository.Get(id);
+            var user = await _repository.GetAsync(id);
             if (user == null)
                 return NotFound(new Response<string>("Usuário Não encontrado"));
             return Ok(new Response<User>(user));
@@ -49,7 +49,6 @@ public class UserController(UserRepository repository) : ControllerBase
             return StatusCode(500, new Response<string>("Erro Interno no Servidor"));
         }
     }
-    
     
     [HttpPost("v1/users")]
     public async Task<IActionResult> PostAsync(
@@ -70,7 +69,7 @@ public class UserController(UserRepository repository) : ControllerBase
 
         try
         {
-            await _repository.Create(user);
+            await _repository.CreateAsync(user);
             return Created($"v1/users/{user.Id}", new  Response<User>(user));
         }
         catch 
