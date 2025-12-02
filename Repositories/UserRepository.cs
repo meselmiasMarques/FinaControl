@@ -19,4 +19,15 @@ public class UserRepository(FinaControlDbContext context) : Repository<User>(con
             .ToListAsync();
         return users;
     }
+
+
+    public async Task<User> GetUserByEmail(string email)
+    {
+        var user = await context
+            .Users
+            .AsNoTracking()
+            .Include(r => r.Roles)
+            .FirstOrDefaultAsync(x => x.Email == email);
+        return user;
+    }
 }

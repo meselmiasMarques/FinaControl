@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using FinaControl.Data;
 using FinaControl.Models;
 using FinaControl.Repositories;
+using FinaControl.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 
@@ -27,6 +28,7 @@ builder.Services.AddTransient<TransactionRepository>();
 builder.Services.AddTransient<UserRepository>();
 builder.Services.AddTransient<CategoryRepository>();
 builder.Services.AddTransient<RoleRepository>();
+builder.Services.AddTransient<TokenService>();
 
 //Swagger
 builder.Services.AddEndpointsApiExplorer();
