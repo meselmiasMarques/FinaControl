@@ -12,7 +12,6 @@ public class CategoryController(CategoryRepository repository) : ControllerBase
 {
     private readonly CategoryRepository _repository = repository;
 
-
     [HttpGet("v1/categories")]
     public async Task<ActionResult<List<Category>>> GetAsync()
     {
@@ -22,27 +21,27 @@ public class CategoryController(CategoryRepository repository) : ControllerBase
 
             return Ok(new Response<List<Category>>(categories));
         }
-        catch 
+        catch
         {
-            return StatusCode(500,new Response<dynamic>("Erro Interno no Servidor"));
+            return StatusCode(500, new Response<dynamic>("Erro Interno no Servidor"));
         }
     }
-    
+
     [HttpGet("v1/categories/{id:long}")]
     public async Task<ActionResult<Category>> GetAsync(long id)
     {
         try
         {
             var categories = await _repository.GetAsync(id);
-            
+
             if (categories == null)
                 return NotFound(new Response<dynamic>("Category not found"));
 
             return Ok(new Response<Category>(categories));
         }
-        catch 
+        catch
         {
-            return StatusCode(500,new Response<dynamic>("Erro Interno no Servidor"));
+            return StatusCode(500, new Response<dynamic>("Erro Interno no Servidor"));
         }
     }
 
@@ -63,10 +62,59 @@ public class CategoryController(CategoryRepository repository) : ControllerBase
             await _repository.CreateAsync(category);
             return Ok(new Response<Category>(category));
         }
-        catch 
+        catch
         {
-            return StatusCode(500,new Response<dynamic>("Erro Interno no Servidor"));
+            return StatusCode(500, new Response<dynamic>("Erro Interno no Servidor"));
         }
+    }
 
+    [HttpPut("v1/categories")]
+    public async Task<IActionResult> PutAsync(
+        [FromBody] EditorCategoryViewModel model,
+        [FromRoute] long id
+    )
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(new Response<dynamic>(ModelState.GetErrors()));
+
+
+        var category = await _repository.GetAsync(id);
+        if (category == null)
+            return NotFound(new Response<dynamic>("Category not found"));
+
+        category.Name = model.Name;
+
+        try
+        {
+            await _repository.UpdateAsync(category);
+            return Ok(new Response<Category>(category));
+        }
+        catch
+        {
+            return StatusCode(500, new Response<dynamic>("Erro Interno no Servidor"));
+        }
+    }
+    
+    [HttpDelete("v1/categories/{id:long}")]
+    public async Task<IActionResult> DeleteAsync(
+        [FromRoute] long id
+    )
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(new Response<dynamic>(ModelState.GetErrors()));
+        
+        try
+        {
+            var category = await _repository.GetAsync(id);
+            if (category == null)
+                return NotFound(new Response<dynamic>("Category not found"));
+            
+            await _repository.DeleteAsync(category);
+            return Ok(new Response<Category>(category));
+        }
+        catch
+        {
+            return StatusCode(500, new Response<dynamic>("Erro Interno no Servidor"));
+        }
     }
 }

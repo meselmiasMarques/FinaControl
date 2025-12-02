@@ -10,8 +10,9 @@ public class EditorTransactionViewModel
     public decimal Amount { get; set; }
     
     [Required(ErrorMessage = "O Campo é obrigatorio")]
-    public ETransactionType Type { get; set; } = ETransactionType.Widthdrawal;
-
+    [MaxLength(ErrorMessage = "Digite uma descrição de no máximo 100 caracteres")]
+    public string Description { get; set; } = string.Empty;
+    
     [Required(ErrorMessage = "O Campo é obrigatorio")]
     public long CategoryId { get; set; }
     

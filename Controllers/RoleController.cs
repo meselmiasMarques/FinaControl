@@ -71,6 +71,54 @@ public class RoleController(RoleRepository repository, UserRepository userReposi
 
     }
     
+    [HttpPut("v1/roles/{id:long}")]
+    public async Task<IActionResult> PutAsync([FromBody] EditorRoleViewModel model, 
+        [FromRoute] long id)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(new Response<dynamic>(ModelState.GetErrors()));
+        
+        try
+        {
+            var role = await _repository.GetAsync(id);
+            if (role == null)
+                return NotFound(new Response<dynamic>("Role not found"));
+            
+            role.Name = model.Name;
+            
+            await _repository.UpdateAsync(role);
+            return Ok(new Response<Role>(role));
+        }
+        catch 
+        {
+            return StatusCode(500,new Response<dynamic>("Erro Interno no Servidor"));
+        }
+
+    }
+    
+    [HttpDelete("v1/roles/{id:long}")]
+    public async Task<IActionResult> DeleteAsync(
+        [FromRoute] long id)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(new Response<dynamic>(ModelState.GetErrors()));
+        
+        try
+        {
+            var role = await _repository.GetAsync(id);
+            if (role == null)
+                return NotFound(new Response<dynamic>("Role not found"));
+            
+            await _repository.DeleteAsync(role);
+            return Ok(new Response<Role>(role));
+        }
+        catch 
+        {
+            return StatusCode(500,new Response<dynamic>("Erro Interno no Servidor"));
+        }
+
+    }
+    
     [HttpPost("v1/roles/users")]
     public async Task<IActionResult> PostAsync(
         [FromBody] AssociateRoleUserViewModel model
@@ -97,6 +145,5 @@ public class RoleController(RoleRepository repository, UserRepository userReposi
         {
             return StatusCode(500,new Response<dynamic>("Erro Interno no Servidor"));
         }
-
     }
 }

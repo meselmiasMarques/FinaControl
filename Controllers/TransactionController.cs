@@ -1,5 +1,6 @@
 using FinaControl.Extensions;
 using FinaControl.Models;
+using FinaControl.Models.Enums;
 using FinaControl.Repositories;
 using FinaControl.ViewModels.Response;
 using FinaControl.ViewModels.Transaction;
@@ -60,10 +61,11 @@ public class TransactionController(TransactionRepository repository) : Controlle
         var transaction = new Transaction
         {
             Id = 0,
+            Description = model.Description,
             Amount =  model.Amount,
-            Type = model.Type,
-            UserId = 1 //alterar para pegar o usuario logado
-            ,CategoryId =  model.CategoryId,
+            Type = ETransactionType.Widthdrawal,
+            UserId = 1, //alterar para pegar o usuario logado
+            CategoryId =  model.CategoryId,
             CreatedAt = DateTime.UtcNow
         };
         
@@ -95,11 +97,36 @@ public class TransactionController(TransactionRepository repository) : Controlle
                 return NotFound(new Response<string>("Transaction not found"));
 
             transaction.Amount = model.Amount;
-            transaction.Type = model.Type;
+            transaction.Description = model.Description;
+            transaction.Type = ETransactionType.Widthdrawal;
             transaction.UserId = 1;
             transaction.CategoryId = model.CategoryId;
 
             await _repository.UpdateAsync(transaction);
+            return Ok(new Response<Transaction>(transaction));
+        }
+        catch 
+        {
+            return StatusCode(500, new Response<string>("Erro Interno no Servidor"));
+        }
+
+    }
+    
+    [HttpDelete("v1/transactions/{id:long}")]
+    public async Task<IActionResult> DeleteAsync(
+        [FromRoute] long id
+    )
+    {
+        if (!ModelState.IsValid)
+            return StatusCode(404,new Response<string>(null,ModelState.GetErrors()));
+
+        try
+        {
+            var transaction = await _repository.GetAsync(id);
+            if (transaction == null)
+                return NotFound(new Response<string>("Transaction not found"));
+            
+            await _repository.DeleteAsync(transaction);
             return Ok(new Response<Transaction>(transaction));
         }
         catch 

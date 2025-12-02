@@ -18,6 +18,11 @@ public class TransactionMap :  IEntityTypeConfiguration<Transaction>
         builder.Property(c => c.Id)
             .UseIdentityColumn();
 
+        builder.Property(c => c.Description)
+            .IsRequired(true)
+            .HasColumnName("Description")
+            .HasColumnType("varchar(100)");
+        
         builder.Property(c => c.Amount)
             .IsRequired()
             .HasColumnType("decimal(18,2)");

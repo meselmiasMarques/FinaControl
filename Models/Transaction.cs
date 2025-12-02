@@ -5,6 +5,9 @@ namespace FinaControl.Models
     public class Transaction
     {
         public long Id { get; set; }
+
+        public string Description { get; set; } = string.Empty;
+        
         public decimal Amount { get; set; }
         public ETransactionType Type { get; set; } = ETransactionType.Widthdrawal;
 

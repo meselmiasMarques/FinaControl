@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace FinaControl.Models
 {
     public class User
@@ -6,6 +8,8 @@ namespace FinaControl.Models
 
         public string Name { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        
+        [JsonIgnore]
         public string PasswordHash { get; set; }  = string.Empty;
         public DateTime CreatedAt { get; set; }
         public List<Role> Roles { get; set; } = new();
