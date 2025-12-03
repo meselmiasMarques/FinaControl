@@ -4,15 +4,17 @@ using FinaControl.Models.Enums;
 using FinaControl.Repositories;
 using FinaControl.ViewModels.Response;
 using FinaControl.ViewModels.Transaction;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinaControl.Controllers;
 
+[Authorize(Roles = "user")]
 [ApiController]
-public class TransactionController(TransactionRepository repository) : ControllerBase
+public class TransactionController(TransactionRepository repository,UserRepository userRepository) : ControllerBase
 {
     private readonly TransactionRepository _repository = repository;
-
+    
     [HttpGet("v1/transactions")]
     public async Task<IActionResult> GetAsync(
         [FromQuery] int skip = 0, 
@@ -64,7 +66,7 @@ public class TransactionController(TransactionRepository repository) : Controlle
             Description = model.Description,
             Amount =  model.Amount,
             Type = ETransactionType.Widthdrawal,
-            UserId = 1, //alterar para pegar o usuario logado
+            UserId = userRepository.GetUserByEmail(User.Identity?.Name).Id, 
             CategoryId =  model.CategoryId,
             CreatedAt = DateTime.UtcNow
         };

@@ -3,10 +3,12 @@ using FinaControl.Models;
 using FinaControl.Repositories;
 using FinaControl.ViewModels.Category;
 using FinaControl.ViewModels.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinaControl.Controllers;
 
+[Authorize]
 [ApiController]
 public class CategoryController(CategoryRepository repository) : ControllerBase
 {
