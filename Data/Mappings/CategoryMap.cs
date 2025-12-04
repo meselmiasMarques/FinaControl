@@ -23,5 +23,17 @@ public class CategoryMap :  IEntityTypeConfiguration<Category>
             .IsRequired()
             .HasMaxLength(100)
             .HasColumnType("nvarchar");
+
+        builder.Property(c => c.UserId)
+            .IsRequired(true);
+        
+        builder
+            .HasOne(c => c.User)
+            .WithMany(u => u.Categories)
+            .HasForeignKey(u => u.UserId)
+            .HasConstraintName("FK_Categories_User")
+            .OnDelete(DeleteBehavior.Restrict);
+
+
     }
 }

@@ -16,4 +16,6 @@ public class EditorTransactionViewModel
     [Required(ErrorMessage = "O Campo é obrigatorio")]
     public long CategoryId { get; set; }
     
+    public DateTime? Payment { get; set; }
+    
 }

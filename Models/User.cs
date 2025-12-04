@@ -13,7 +13,7 @@ namespace FinaControl.Models
         public string PasswordHash { get; set; }  = string.Empty;
         public DateTime CreatedAt { get; set; }
         public List<Role> Roles { get; set; } = new();
-        
         public List<Transaction> Transactions { get; set; } = new();
+        public List<Category> Categories { get; set; } = new();
     }
 }

@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.JavaScript;
 using FinaControl.Extensions;
 using FinaControl.Models;
 using FinaControl.Models.Enums;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FinaControl.Controllers;
 
-[Authorize(Roles = "user")]
+[Authorize()]
 [ApiController]
 public class TransactionController(TransactionRepository repository,UserRepository userRepository) : ControllerBase
 {
@@ -22,8 +23,10 @@ public class TransactionController(TransactionRepository repository,UserReposito
     {
         try
         {
+            var user =  await userRepository.GetUserByEmail(User.Identity.Name);
+            
             var transactions = await _repository
-                .GetTransactionWithCategoriesAsync(skip, take);
+                .GetTransactionByUserAsync(skip, take,user);
 
             return Ok(new Response<List<Transaction>>(transactions));
         }
@@ -59,22 +62,25 @@ public class TransactionController(TransactionRepository repository,UserReposito
     {
         if (!ModelState.IsValid)
             return StatusCode(404,new Response<string>(null,ModelState.GetErrors()));
-
-        var transaction = new Transaction
-        {
-            Id = 0,
-            Description = model.Description,
-            Amount =  model.Amount,
-            Type = ETransactionType.Widthdrawal,
-            UserId = userRepository.GetUserByEmail(User.Identity?.Name).Id, 
-            CategoryId =  model.CategoryId,
-            CreatedAt = DateTime.UtcNow
-        };
         
         try
         {
+            var user =  await userRepository.GetUserByEmail(User.Identity.Name);
+            
+            var transaction = new Transaction
+            {
+                Id = 0,
+                Description = model.Description,
+                Amount =  model.Amount,
+                Type = ETransactionType.Widthdrawal,
+                UserId = user.Id,
+                CategoryId =  model.CategoryId,
+                CreatedAt = DateTime.UtcNow,
+                Payment = null
+            };
+            
             await _repository.CreateAsync(transaction);
-            return Ok(new Response<Transaction>(transaction));
+            return Created($"v1/transactions/{transaction.Id}",new Response<Transaction>(transaction));
         }
         catch 
         {
@@ -103,6 +109,33 @@ public class TransactionController(TransactionRepository repository,UserReposito
             transaction.Type = ETransactionType.Widthdrawal;
             transaction.UserId = 1;
             transaction.CategoryId = model.CategoryId;
+            transaction.Payment = DateTime.UtcNow;
+
+            await _repository.UpdateAsync(transaction);
+            return Ok(new Response<Transaction>(transaction));
+        }
+        catch 
+        {
+            return StatusCode(500, new Response<string>("Erro Interno no Servidor"));
+        }
+
+    }
+    
+    [HttpPut("v1/transactions/payment/{id:long}")]
+    public async Task<IActionResult> PutAsync(
+        [FromRoute] long id
+    )
+    {
+        if (!ModelState.IsValid)
+            return StatusCode(404,new Response<string>(null,ModelState.GetErrors()));
+
+        try
+        {
+            var transaction = await _repository.GetAsync(id);
+            if (transaction == null)
+                return NotFound(new Response<string>("Transaction not found"));
+            
+            transaction.Payment = DateTime.UtcNow;
 
             await _repository.UpdateAsync(transaction);
             return Ok(new Response<Transaction>(transaction));

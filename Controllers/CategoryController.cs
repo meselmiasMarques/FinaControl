@@ -10,7 +10,11 @@ namespace FinaControl.Controllers;
 
 [Authorize]
 [ApiController]
-public class CategoryController(CategoryRepository repository) : ControllerBase
+public class CategoryController(
+    CategoryRepository repository,
+    UserRepository userRepository
+    
+) : ControllerBase
 {
     private readonly CategoryRepository _repository = repository;
 
@@ -19,7 +23,8 @@ public class CategoryController(CategoryRepository repository) : ControllerBase
     {
         try
         {
-            var categories = await _repository.GetAsync();
+            var user = await userRepository.GetUserByEmail(User.Identity.Name);
+            var categories = await _repository.GetCategoriesByUserAsync(user);
 
             return Ok(new Response<List<Category>>(categories));
         }
@@ -53,16 +58,19 @@ public class CategoryController(CategoryRepository repository) : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(new Response<dynamic>(ModelState.GetErrors()));
 
+        var user = await userRepository.GetUserByEmail(User.Identity.Name);
+        
         var category = new Category
         {
             Id = 0,
-            Name = model.Name
+            Name = model.Name,
+            UserId =  user.Id
         };
 
         try
         {
             await _repository.CreateAsync(category);
-            return Ok(new Response<Category>(category));
+            return Created($"v1/categories/{category.Id}",new Response<Category>(category));
         }
         catch
         {

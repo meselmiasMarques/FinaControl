@@ -48,14 +48,14 @@ public class UserMap : IEntityTypeConfiguration<User>
                 .WithMany()
                     .HasForeignKey("RoleId")
                     .HasConstraintName("FK_UserRole_RoleId")
-                    .OnDelete(DeleteBehavior.Cascade),
+                    .OnDelete(DeleteBehavior.Restrict),
                 
                 user => user
                     .HasOne<User>()
                     .WithMany()
                     .HasForeignKey("UserId")
                     .HasConstraintName("FK_UserRole_UserId")
-                .OnDelete(DeleteBehavior.Cascade),
+                .OnDelete(DeleteBehavior.Restrict),
 
                 userRole =>
                 {

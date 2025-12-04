@@ -4,6 +4,7 @@ using FinaControl.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinaControl.Migrations
 {
     [DbContext(typeof(FinaControlDbContext))]
-    partial class FinaControlDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251203235609_Creat")]
+    partial class Creat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,8 +43,6 @@ namespace FinaControl.Migrations
 
                     b.HasKey("Id")
                         .HasName("PK_Category");
-
-                    b.HasIndex("UserId");
 
                     b.HasIndex(new[] { "Name" }, "IX_Category_Name")
                         .IsUnique();
@@ -174,31 +175,19 @@ namespace FinaControl.Migrations
                     b.ToTable("UserRole", (string)null);
                 });
 
-            modelBuilder.Entity("FinaControl.Models.Category", b =>
-                {
-                    b.HasOne("FinaControl.Models.User", "User")
-                        .WithMany("Categories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_Categories_User");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("FinaControl.Models.Transaction", b =>
                 {
                     b.HasOne("FinaControl.Models.Category", "Category")
                         .WithMany("Transactions")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_Transaction_Category");
 
                     b.HasOne("FinaControl.Models.User", "User")
                         .WithMany("Transactions")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_Transaction_User");
 
@@ -212,14 +201,14 @@ namespace FinaControl.Migrations
                     b.HasOne("FinaControl.Models.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_UserRole_RoleId");
 
                     b.HasOne("FinaControl.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_UserRole_UserId");
                 });
@@ -231,8 +220,6 @@ namespace FinaControl.Migrations
 
             modelBuilder.Entity("FinaControl.Models.User", b =>
                 {
-                    b.Navigation("Categories");
-
                     b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618

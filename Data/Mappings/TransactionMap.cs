@@ -35,19 +35,23 @@ public class TransactionMap :  IEntityTypeConfiguration<Transaction>
             .IsRequired()
             .HasDefaultValueSql("GETDATE()");
         
+        builder.Property(c => c.Payment)
+            .IsRequired(false)
+            .HasDefaultValueSql("GETDATE()");
+        
         //Relacionamentos
         
         builder.HasOne(c => c.Category)
             .WithMany(c => c.Transactions)
             .HasForeignKey(c => c.CategoryId)
             .HasConstraintName("FK_Transaction_Category")
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
         
         builder
             .HasOne(c => c.User)
             .WithMany(u => u.Transactions)
             .HasConstraintName("FK_Transaction_User")
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
         
 
 
