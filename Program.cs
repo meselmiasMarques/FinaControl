@@ -4,6 +4,7 @@ using FinaControl;
 using FinaControl.Data;
 using FinaControl.Models;
 using FinaControl.Repositories;
+using FinaControl.Repositories.Abstractions;
 using FinaControl.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -47,9 +48,10 @@ builder.Services.AddDbContext<FinaControlDbContext>(options =>
 //INJEÇÃO DE DEPENDENCIAS
 builder.Services.AddTransient<TransactionRepository>();
 builder.Services.AddTransient<UserRepository>();
-builder.Services.AddTransient<CategoryRepository>();
-builder.Services.AddTransient<RoleRepository>();
+builder.Services.AddTransient<ICategoryRepository,CategoryRepository>();
+builder.Services.AddTransient<IRoleRepository,RoleRepository>();
 builder.Services.AddTransient<TokenService>();
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 //Swagger
 builder.Services.AddEndpointsApiExplorer();

@@ -1,6 +1,7 @@
 using FinaControl.Extensions;
 using FinaControl.Models;
 using FinaControl.Repositories;
+using FinaControl.Repositories.Abstractions;
 using FinaControl.ViewModels.Category;
 using FinaControl.ViewModels.Response;
 using Microsoft.AspNetCore.Authorization;
@@ -11,12 +12,12 @@ namespace FinaControl.Controllers;
 [Authorize]
 [ApiController]
 public class CategoryController(
-    CategoryRepository repository,
+    ICategoryRepository repository,
     UserRepository userRepository
     
 ) : ControllerBase
 {
-    private readonly CategoryRepository _repository = repository;
+    private readonly ICategoryRepository _repository = repository;
 
     [HttpGet("v1/categories")]
     public async Task<ActionResult<List<Category>>> GetAsync()
@@ -96,7 +97,7 @@ public class CategoryController(
 
         try
         {
-            await _repository.UpdateAsync(category);
+             _repository.UpdateAsync(category);
             return Ok(new Response<Category>(category));
         }
         catch

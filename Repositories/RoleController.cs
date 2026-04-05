@@ -1,6 +1,7 @@
 using FinaControl.Extensions;
 using FinaControl.Models;
 using FinaControl.Repositories;
+using FinaControl.Repositories.Abstractions;
 using FinaControl.ViewModels.Category;
 using FinaControl.ViewModels.Response;
 using FinaControl.ViewModels.Role;
@@ -9,9 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace FinaControl.Controllers;
 
 [ApiController]
-public class RoleController(RoleRepository repository, UserRepository userRepository) : ControllerBase
+public class RoleController(IRoleRepository repository, UserRepository userRepository) : ControllerBase
 {
-    private readonly RoleRepository _repository = repository;
+    private readonly IRoleRepository _repository = repository;
     private readonly UserRepository _userRepository =  userRepository;
 
     [HttpGet("v1/roles")]
@@ -86,7 +87,7 @@ public class RoleController(RoleRepository repository, UserRepository userReposi
             
             role.Name = model.Name;
             
-            await _repository.UpdateAsync(role);
+             _repository.UpdateAsync(role);
             return Ok(new Response<Role>(role));
         }
         catch 
