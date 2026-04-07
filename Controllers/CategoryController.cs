@@ -2,6 +2,7 @@ using FinaControl.Extensions;
 using FinaControl.Models;
 using FinaControl.Repositories;
 using FinaControl.Repositories.Abstractions;
+using FinaControl.Services;
 using FinaControl.ViewModels.Category;
 using FinaControl.ViewModels.Response;
 using Microsoft.AspNetCore.Authorization;
@@ -12,22 +13,22 @@ namespace FinaControl.Controllers;
 [Authorize]
 [ApiController]
 public class CategoryController(
-    ICategoryRepository repository,
+    ICategoryService categoryService,
+  
     UserRepository userRepository
     
 ) : ControllerBase
 {
-    private readonly ICategoryRepository _repository = repository;
 
     [HttpGet("v1/categories")]
-    public async Task<ActionResult<List<Category>>> GetAsync()
+    public async Task<ActionResult<Response<List<Category>>>> GetAsync()
     {
         try
         {
             var user = await userRepository.GetUserByEmail(User.Identity.Name);
-            var categories = await _repository.GetCategoriesByUserAsync(user);
+            var result = await categoryService.GetAsync();
 
-            return Ok(new Response<List<Category>>(categories));
+          return Ok(result);
         }
         catch
         {
@@ -40,12 +41,11 @@ public class CategoryController(
     {
         try
         {
-            var categories = await _repository.GetAsync(id);
-
-            if (categories == null)
-                return NotFound(new Response<dynamic>("Category not found"));
-
-            return Ok(new Response<Category>(categories));
+            var user = User.Identity.Name;
+            var result = await categoryService.GetAsync();
+            return result.Errors is not null ?
+                BadRequest(new Response<Category>(result.Errors)) 
+                : Ok(result);
         }
         catch
         {
@@ -58,20 +58,12 @@ public class CategoryController(
     {
         if (!ModelState.IsValid)
             return BadRequest(new Response<dynamic>(ModelState.GetErrors()));
-
-        var user = await userRepository.GetUserByEmail(User.Identity.Name);
         
-        var category = new Category
-        {
-            Id = 0,
-            Name = model.Name,
-            UserId =  user.Id
-        };
-
+        var u =  await userRepository.GetUserByEmail(User.Identity.Name);
         try
         {
-            await _repository.CreateAsync(category);
-            return Created($"v1/categories/{category.Id}",new Response<Category>(category));
+           var result = await categoryService.CreateAsync(model);
+            return Created($"v1/categories/{result.Data?.Id}",new Response<Category>(result?.Data));
         }
         catch
         {
@@ -87,23 +79,9 @@ public class CategoryController(
     {
         if (!ModelState.IsValid)
             return BadRequest(new Response<dynamic>(ModelState.GetErrors()));
-
-
-        var category = await _repository.GetAsync(id);
-        if (category == null)
-            return NotFound(new Response<dynamic>("Category not found"));
-
-        category.Name = model.Name;
-
-        try
-        {
-             _repository.UpdateAsync(category);
-            return Ok(new Response<Category>(category));
-        }
-        catch
-        {
-            return StatusCode(500, new Response<dynamic>("Erro Interno no Servidor"));
-        }
+    
+        await categoryService.UpdateAsync(model, id);
+        return Ok(new Response<dynamic>(model));
     }
     
     [HttpDelete("v1/categories/{id:long}")]
@@ -116,12 +94,9 @@ public class CategoryController(
         
         try
         {
-            var category = await _repository.GetAsync(id);
-            if (category == null)
-                return NotFound(new Response<dynamic>("Category not found"));
-            
-            await _repository.DeleteAsync(category);
-            return Ok(new Response<Category>(category));
+            var category = await categoryService.GetAsync(id);
+            await categoryService.DeleteAsync(id);
+           return NoContent();
         }
         catch
         {

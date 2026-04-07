@@ -1,8 +1,8 @@
 using FinaControl.Models;
 
-namespace FinaControl.Repositories.Abstractions;
+namespace FinaControl.Services;
 
-public interface ITransactionRepository
+public interface ITransactionService
 {
     Task<List<Transaction>> GetTransactionByUserAsync(int skip, int take, User? user);
     Task<List<Transaction>> GetAsync(int skip = 0, int take = 25);

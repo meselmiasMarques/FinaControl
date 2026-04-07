@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinaControl.Migrations
 {
     [DbContext(typeof(FinaControlDbContext))]
-    [Migration("20251127223538_CriacaoDoModelo")]
-    partial class CriacaoDoModelo
+    [Migration("20260406190025_v1")]
+    partial class v1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -38,8 +38,13 @@ namespace FinaControl.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar");
 
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id")
                         .HasName("PK_Category");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex(new[] { "Name" }, "IX_Category_Name")
                         .IsUnique();
@@ -87,6 +92,21 @@ namespace FinaControl.Migrations
 
                     b.Property<long>("CategoryId")
                         .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("Description");
+
+                    b.Property<DateTime?>("Payment")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<int>("Type")
                         .HasColumnType("INT");
@@ -157,19 +177,31 @@ namespace FinaControl.Migrations
                     b.ToTable("UserRole", (string)null);
                 });
 
+            modelBuilder.Entity("FinaControl.Models.Category", b =>
+                {
+                    b.HasOne("FinaControl.Models.User", "User")
+                        .WithMany("Categories")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Categories_User");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FinaControl.Models.Transaction", b =>
                 {
                     b.HasOne("FinaControl.Models.Category", "Category")
                         .WithMany("Transactions")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("FK_Transaction_Category");
 
                     b.HasOne("FinaControl.Models.User", "User")
                         .WithMany("Transactions")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("FK_Transaction_User");
 
@@ -183,14 +215,14 @@ namespace FinaControl.Migrations
                     b.HasOne("FinaControl.Models.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("FK_UserRole_RoleId");
 
                     b.HasOne("FinaControl.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("FK_UserRole_UserId");
                 });
@@ -202,6 +234,8 @@ namespace FinaControl.Migrations
 
             modelBuilder.Entity("FinaControl.Models.User", b =>
                 {
+                    b.Navigation("Categories");
+
                     b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618

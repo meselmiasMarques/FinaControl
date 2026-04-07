@@ -1,11 +1,12 @@
 using FinaControl.Data;
 using FinaControl.Models;
+using FinaControl.Repositories.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace FinaControl.Repositories;
 
-public class TransactionRepository(FinaControlDbContext context) : Repository<Transaction>(context)
+public class TransactionRepository(FinaControlDbContext context) : ITransactionRepository
 {
 
     public async Task<List<Transaction>> GetTransactionByUserAsync(int skip, int take, User? user)
@@ -22,4 +23,20 @@ public class TransactionRepository(FinaControlDbContext context) : Repository<Tr
         
         return transactions;
     }
+
+    public async Task<List<Transaction>> GetAsync(int skip = 0, int take = 25)
+        => await context.Transactions.AsNoTracking().Skip(skip).Take(take).ToListAsync();
+    
+
+    public async Task<Transaction> GetAsync(long id)
+        => await context.Transactions.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id); 
+
+    public async Task CreateAsync(Transaction entity)
+        => await context.Transactions.AddAsync(entity);
+
+    public void Update(Transaction entity)
+        => context.Transactions.Update(entity);
+
+    public void Delete(Transaction entity)
+        => context.Transactions.Remove(entity);
 }

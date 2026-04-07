@@ -13,10 +13,7 @@ namespace FinaControl.Data
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new UserMap());
-            modelBuilder.ApplyConfiguration(new RoleMap());
-            modelBuilder.ApplyConfiguration(new TransactionMap());
-            modelBuilder.ApplyConfiguration(new CategoryMap());
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(FinaControlDbContext).Assembly);
         }
     }
 }

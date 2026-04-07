@@ -16,10 +16,10 @@ public class CategoryRepository(FinaControlDbContext context) : ICategoryReposit
     public async Task CreateAsync(Category entity)
         => await context.Categories.AddAsync(entity);
 
-    public void UpdateAsync(Category entity)
+    public void Update(Category entity)
         => context.Categories.Update(entity);
-
-    public async Task DeleteAsync(Category entity)
+    
+    public void Delete(Category entity)
         => context.Categories.Remove(entity);
     
     public async Task<List<Category>> GetCategoriesByUserAsync(User user)

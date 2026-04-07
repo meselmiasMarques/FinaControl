@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices.JavaScript;
+
 using FinaControl.Extensions;
 using FinaControl.Models;
 using FinaControl.Models.Enums;
@@ -12,7 +12,9 @@ namespace FinaControl.Controllers;
 
 [Authorize()]
 [ApiController]
-public class TransactionController(TransactionRepository repository,UserRepository userRepository) : ControllerBase
+public class TransactionController(
+    TransactionRepository repository,
+    UserRepository userRepository) : ControllerBase
 {
     private readonly TransactionRepository _repository = repository;
     
@@ -111,7 +113,7 @@ public class TransactionController(TransactionRepository repository,UserReposito
             transaction.CategoryId = model.CategoryId;
             transaction.Payment = DateTime.UtcNow;
 
-            await _repository.UpdateAsync(transaction);
+             _repository.Update(transaction);
             return Ok(new Response<Transaction>(transaction));
         }
         catch 
@@ -137,7 +139,7 @@ public class TransactionController(TransactionRepository repository,UserReposito
             
             transaction.Payment = DateTime.UtcNow;
 
-            await _repository.UpdateAsync(transaction);
+             _repository.Update(transaction);
             return Ok(new Response<Transaction>(transaction));
         }
         catch 
@@ -161,7 +163,7 @@ public class TransactionController(TransactionRepository repository,UserReposito
             if (transaction == null)
                 return NotFound(new Response<string>("Transaction not found"));
             
-            await _repository.DeleteAsync(transaction);
+            _repository.Delete(transaction);
             return Ok(new Response<Transaction>(transaction));
         }
         catch 

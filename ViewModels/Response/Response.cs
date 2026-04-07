@@ -20,4 +20,9 @@ public class Response<T>
     {
         Errors = errors;
     }
+
+    public Response(string error)
+    {
+        Errors.Add(error);
+    }
 }

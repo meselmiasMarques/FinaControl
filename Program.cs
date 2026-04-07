@@ -53,6 +53,8 @@ builder.Services.AddTransient<IRoleRepository,RoleRepository>();
 builder.Services.AddTransient<TokenService>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
+builder.Services.AddScoped<ICategoryService, CategoryService> ();
+
 //Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
