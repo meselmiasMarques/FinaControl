@@ -1,8 +1,7 @@
 using FinaControl.Extensions;
 using FinaControl.Models;
-using FinaControl.Repositories;
 using FinaControl.Repositories.Abstractions;
-using FinaControl.ViewModels.Category;
+using FinaControl.Services;
 using FinaControl.ViewModels.Response;
 using FinaControl.ViewModels.Role;
 using Microsoft.AspNetCore.Mvc;
@@ -10,19 +9,20 @@ using Microsoft.AspNetCore.Mvc;
 namespace FinaControl.Controllers;
 
 [ApiController]
-public class RoleController(IRoleRepository repository, UserRepository userRepository) : ControllerBase
+public class RoleController(
+    IRoleService roleService, 
+    IUserService userService,
+    IUnitOfWork unitOfWork
+    ) : ControllerBase
 {
-    private readonly IRoleRepository _repository = repository;
-    private readonly UserRepository _userRepository =  userRepository;
-
     [HttpGet("v1/roles")]
     public async Task<ActionResult<List<Role>>> GetAsync()
     {
         try
         {
-            var roles = await _repository.GetAsync();
+            var roles = await roleService.GetAsync();
 
-            return Ok(new Response<List<Role>>(roles));
+            return StatusCode(200, roles);
         }
         catch 
         {
@@ -35,12 +35,12 @@ public class RoleController(IRoleRepository repository, UserRepository userRepos
     {
         try
         {
-            var roles = await _repository.GetAsync(id);
+            var roles = await roleService.GetAsync(id);
             
             if (roles == null)
-                return NotFound(new Response<dynamic>("Roles not found"));
+                return StatusCode(404,new Response<dynamic>("Roles not found"));
 
-            return Ok(new Response<Role>(roles));
+            return StatusCode(200,roles);
         }
         catch 
         {
@@ -54,16 +54,10 @@ public class RoleController(IRoleRepository repository, UserRepository userRepos
         if (!ModelState.IsValid)
             return BadRequest(new Response<dynamic>(ModelState.GetErrors()));
 
-        var role = new Role
-        {
-            Id = 0,
-            Name = model.Name
-        };
-
         try
         {
-            await _repository.CreateAsync(role);
-            return Ok(new Response<Role>(role));
+            await roleService.CreateAsync(model);
+            return StatusCode(200);
         }
         catch 
         {
@@ -81,14 +75,8 @@ public class RoleController(IRoleRepository repository, UserRepository userRepos
         
         try
         {
-            var role = await _repository.GetAsync(id);
-            if (role == null)
-                return NotFound(new Response<dynamic>("Role not found"));
-            
-            role.Name = model.Name;
-            
-             _repository.UpdateAsync(role);
-            return Ok(new Response<Role>(role));
+             var result=   await roleService.UpdateAsync(model, id);
+             return StatusCode(200,result);
         }
         catch 
         {
@@ -106,12 +94,8 @@ public class RoleController(IRoleRepository repository, UserRepository userRepos
         
         try
         {
-            var role = await _repository.GetAsync(id);
-            if (role == null)
-                return NotFound(new Response<dynamic>("Role not found"));
-            
-            await _repository.DeleteAsync(role);
-            return Ok(new Response<Role>(role));
+           var result = await roleService.DeleteAsync(id);
+            return StatusCode(200,result);
         }
         catch 
         {
@@ -125,26 +109,8 @@ public class RoleController(IRoleRepository repository, UserRepository userRepos
         [FromBody] AssociateRoleUserViewModel model
         )
     {
-        var  role = await _repository.GetAsync(model.RoleId);
-        if (role == null)
-            return NotFound(new Response<dynamic>("Role not found"));
         
-        var user = await _userRepository.GetAsync(model.UserId);
-        if (user == null)
-            return NotFound(new Response<dynamic>("User not found"));
-        
-        if (user.Roles.Any(r => r.Id == model.RoleId))
-            return NotFound(new Response<dynamic>("Perfil já está associado ao usuário"));
-        
-        try
-        {
-            user.Roles.Add(role);
-            await _userRepository.UpdateAsync(user);
-            return Ok(new Response<User>(user));
-        }
-        catch 
-        {
-            return StatusCode(500,new Response<dynamic>("Erro Interno no Servidor"));
-        }
+        var result = await userService.UpdateRolesByUserAsync(model);
+        return StatusCode(200,result);
     }
 }

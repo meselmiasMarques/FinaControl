@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using FinaControl;
 using FinaControl.Data;
+using FinaControl.Extensios;
 using FinaControl.Models;
 using FinaControl.Repositories;
 using FinaControl.Repositories.Abstractions;
@@ -46,14 +47,11 @@ builder.Services.AddDbContext<FinaControlDbContext>(options =>
 });
 
 //INJEÇÃO DE DEPENDENCIAS
-builder.Services.AddTransient<TransactionRepository>();
-builder.Services.AddTransient<UserRepository>();
-builder.Services.AddTransient<ICategoryRepository,CategoryRepository>();
-builder.Services.AddTransient<IRoleRepository,RoleRepository>();
-builder.Services.AddTransient<TokenService>();
-builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+builder.Services.AddRepositories();
+builder.Services.AddUnitOfWork();
+builder.Services.AddServices();
 
-builder.Services.AddScoped<ICategoryService, CategoryService> ();
+
 
 //Swagger
 builder.Services.AddEndpointsApiExplorer();

@@ -25,4 +25,22 @@
     <Folder Include="Migrations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Extensios\**" />
+    <Compile Remove="Repositories\IRepository.cs" />
+    <Compile Remove="Repositories\Repository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Extensios\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Extensios\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Extensios\**" />
+  </ItemGroup>
+
 </Project>
