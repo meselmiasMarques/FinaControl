@@ -22,11 +22,11 @@ public class RoleMap : IEntityTypeConfiguration<Role>
         builder.Property(c => c.Name)
             .IsRequired()
             .HasMaxLength(100)
-            .HasColumnType("nvarchar");
+            .HasColumnType("varchar(100)");
 
         builder.Property(c => c.CreatedAt)
             .IsRequired()
-            .HasDefaultValueSql("GETDATE()");
+            .HasDefaultValueSql("now()");
 
 
     }

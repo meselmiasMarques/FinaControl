@@ -43,7 +43,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<FinaControlDbContext>(options =>
 {
-    options.UseSqlServer(connectionString);
+    options.UseNpgsql(connectionString);
 });
 
 //INJEÇÃO DE DEPENDENCIAS
@@ -66,6 +66,12 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+// using (var scope = app.Services.CreateScope())
+// {
+//     var db = scope.ServiceProvider.GetRequiredService<FinaControlDbContext>();
+//     db.Database.Migrate();
+// }
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>

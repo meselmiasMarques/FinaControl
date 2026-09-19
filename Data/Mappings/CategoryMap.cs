@@ -22,7 +22,7 @@ public class CategoryMap :  IEntityTypeConfiguration<Category>
         builder.Property(c => c.Name)
             .IsRequired()
             .HasMaxLength(100)
-            .HasColumnType("nvarchar");
+            .HasColumnType("varchar(200)");
 
         builder.Property(c => c.UserId)
             .IsRequired(true);

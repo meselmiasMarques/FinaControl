@@ -40,11 +40,7 @@ public class AccountController(UserRepository userRepository) : ControllerBase
         {
             return StatusCode(404,new Response<dynamic>("O email já está cadastrado"));
         }
-        catch (Exception e)
-        {
-            return StatusCode(500,new Response<dynamic>("O email já está cadastrado"));
-
-        }
+        
         
     }
     

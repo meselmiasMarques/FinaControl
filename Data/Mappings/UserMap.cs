@@ -36,7 +36,7 @@ public class UserMap : IEntityTypeConfiguration<User>
         
         builder.Property(c => c.CreatedAt)
             .IsRequired()
-            .HasDefaultValueSql("GETDATE()");
+            .HasDefaultValueSql("now()");
         
         //Relacionamentos
         builder.HasMany(u => u.Roles)

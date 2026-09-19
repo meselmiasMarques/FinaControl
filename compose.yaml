@@ -1,0 +1,43 @@
+﻿services:
+  finacontrol:
+    image: finacontrol
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: finacontrol
+    ports:
+      - "5001:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_URLS: http://+:80
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=finacontroldb;Username=postgres;Password=postgres"
+    networks:
+      - backend
+  
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: finacontroldb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+    
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d finacontroldb" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
+
+networks:
+  backend:

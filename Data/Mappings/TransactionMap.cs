@@ -29,15 +29,14 @@ public class TransactionMap :  IEntityTypeConfiguration<Transaction>
         
         builder.Property(c => c.Type)
             .IsRequired()
-            .HasColumnType("INT");
+            .HasColumnType("integer");
         
         builder.Property(c => c.CreatedAt)
             .IsRequired()
-            .HasDefaultValueSql("GETDATE()");
-        
+            .HasDefaultValueSql("now()");
+
         builder.Property(c => c.Payment)
-            .IsRequired(false)
-            .HasDefaultValueSql("GETDATE()");
+            .IsRequired(false);
         
         //Relacionamentos
         

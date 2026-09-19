@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FinaControl.Controllers;
 
-[Authorize]
+//[Authorize]
 [ApiController]
 public class CategoryController(
     ICategoryService categoryService,
