@@ -1,6 +1,7 @@
 using FinaControl.Models;
 using FinaControl.Repositories.Abstractions;
 using FinaControl.Services;
+using FinaControl.Services.Abstractions;
 
 namespace FinaControl.Repositories;
 

@@ -1,6 +1,6 @@
 using FinaControl.Models;
 
-namespace FinaControl.Services;
+namespace FinaControl.Services.Abstractions;
 
 public interface ITransactionService
 {
@@ -8,6 +8,6 @@ public interface ITransactionService
     Task<List<Transaction>> GetAsync(int skip = 0, int take = 25);
     Task<Transaction> GetAsync(long id);
     Task CreateAsync(Transaction entity);
-    void Update(Transaction entity);
-    void Delete(Transaction entity);
+    Task Update(Transaction entity);
+    Task Delete(Transaction entity);
 }
