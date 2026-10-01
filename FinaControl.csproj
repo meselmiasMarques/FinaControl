@@ -21,6 +21,7 @@
     <Compile Remove="Extensios\**" />
     <Compile Remove="Repositories\IRepository.cs" />
     <Compile Remove="Repositories\Repository.cs" />
+    <Compile Remove="Repositories\TransactionService.cs" />
   </ItemGroup>
 
   <ItemGroup>
