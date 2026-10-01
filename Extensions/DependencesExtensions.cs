@@ -4,9 +4,9 @@ using FinaControl.Services;
 using FinaControl.Services.Abstractions;
 using TransactionService = FinaControl.Services.TransactionService;
 
-namespace FinaControl.Extensios;
+namespace FinaControl.Extensions;
 
-public static class DependencesExtensios
+public static class DependencesExtensions
 {
     public static void AddRepositories(this IServiceCollection services)
     {
