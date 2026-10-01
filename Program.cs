@@ -2,7 +2,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using FinaControl;
 using FinaControl.Data;
-using FinaControl.Extensios;
+using FinaControl.Extensions;
 using FinaControl.Models;
 using FinaControl.Repositories;
 using FinaControl.Repositories.Abstractions;
@@ -67,12 +67,12 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// using (var scope = app.Services.CreateScope())
-// {
-//     var db = scope.ServiceProvider.GetRequiredService<FinaControlDbContext>();
-//     db.Database.Migrate();
-// }
-
+//Criei para criar o banco de dados automaticamente, caso não exista, e aplicar as migrações pendentes
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<FinaControlDbContext>();
+    await db.Database.MigrateAsync();
+}
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -84,5 +84,7 @@ app.UseSwaggerUI(c =>
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+
 
 app.Run();

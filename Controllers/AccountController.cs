@@ -1,6 +1,7 @@
 using FinaControl.Extensions;
 using FinaControl.Models;
 using FinaControl.Repositories;
+using FinaControl.Repositories.Abstractions;
 using FinaControl.Services;
 using FinaControl.ViewModels.Login;
 using FinaControl.ViewModels.Register;
@@ -10,9 +11,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinaControl.Controllers;
 
-public class AccountController(UserRepository userRepository) : ControllerBase
+public class AccountController(IUserRepository userRepository, IUnitOfWork unitOfWork) : ControllerBase
 {
-    private readonly UserRepository userRepository = userRepository;
 
     [HttpPost("v1/accounts")]
     public async Task<IActionResult> PostAsync(
@@ -34,6 +34,7 @@ public class AccountController(UserRepository userRepository) : ControllerBase
         try
         {
             await userRepository.CreateAsync(user);
+            await unitOfWork.CommitAsync();
             return Ok(new Response<User>(user));
         }
         catch (DbUpdateException e)
